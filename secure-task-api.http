@@ -1,0 +1,6 @@
+@secure_task_api_HostAddress = http://localhost:5028
+
+GET {{secure_task_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
