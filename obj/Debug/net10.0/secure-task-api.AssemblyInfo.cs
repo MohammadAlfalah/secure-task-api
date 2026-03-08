@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("secure-task-api")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1c375b2aaf90ae47a3e2e30b5457e6a9ca3f00cd")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b7a5641b7362a768f4a68a7b348198a82eb69796")]
 [assembly: System.Reflection.AssemblyProductAttribute("secure-task-api")]
 [assembly: System.Reflection.AssemblyTitleAttribute("secure-task-api")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

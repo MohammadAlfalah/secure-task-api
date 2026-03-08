@@ -160,3 +160,5 @@ C:\Users\mealf\Desktop\Projects\secure-task-api\obj\Debug\net10.0\refint\secure-
 C:\Users\mealf\Desktop\Projects\secure-task-api\obj\Debug\net10.0\secure-task-api.pdb
 C:\Users\mealf\Desktop\Projects\secure-task-api\obj\Debug\net10.0\secure-task-api.genruntimeconfig.cache
 C:\Users\mealf\Desktop\Projects\secure-task-api\obj\Debug\net10.0\ref\secure-task-api.dll
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\BCrypt.Net-Next.dll
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

@@ -1,9 +1,12 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using SecureTaskApi.Dtos;
 using SecureTaskApi.Services;
 
 namespace SecureTaskApi.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TasksController : ControllerBase
@@ -11,7 +14,8 @@ public class TasksController : ControllerBase
     private readonly ITaskService _taskService;
     public TasksController(ITaskService taskService) => _taskService = taskService;
 
-    private int GetUserId() => 1; // temporary until JWT is added
+    private int GetUserId() =>
+        int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TaskReadDto>>> Get() =>
