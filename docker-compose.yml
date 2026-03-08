@@ -1,0 +1,19 @@
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      SA_PASSWORD: "SecureTask@2026!"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      ConnectionStrings__DefaultConnection: "Server=db;Database=SecureTaskDb;User Id=sa;Password=SecureTask@2026!;TrustServerCertificate=True"
+      Jwt__Key: "SuperSecretJwtKey2026!SecureTask"
+      Jwt__Issuer: "SecureTaskApi"
+    depends_on:
+      - db

@@ -11,10 +11,46 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("Bearer", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Description = "Enter: Bearer {token}",
+        Name = "Authorization",
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT"
+    });
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+
+
+
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        sqlOptions => sqlOptions.EnableRetryOnFailure(
+            maxRetryCount: 5,
+            maxRetryDelay: TimeSpan.FromSeconds(10),
+            errorNumbersToAdd: null
+        )
+    ));
 
 builder.Services.AddScoped<ITaskService, TaskService>();
 builder.Services.AddSingleton<JwtTokenService>();
@@ -40,12 +76,24 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     if (!db.Users.Any())
     {
-        db.Users.Add(new User { UserName = "testuser", PasswordHash = BCrypt.Net.BCrypt.HashPassword("test123"), Role = "User" });
+        db.Users.Add(new User
+        {
+            UserName = "testuser",
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword("test123"),
+            Role = "User"
+        });
         db.SaveChanges();
     }
 }
+
 app.UseExceptionHandler(errApp =>
 {
     errApp.Run(async ctx =>
@@ -55,7 +103,6 @@ app.UseExceptionHandler(errApp =>
         await ctx.Response.WriteAsync("{\"error\":\"An unexpected error occurred. Please try again later.\"}");
     });
 });
-
 
 app.UseSwagger();
 app.UseSwaggerUI();

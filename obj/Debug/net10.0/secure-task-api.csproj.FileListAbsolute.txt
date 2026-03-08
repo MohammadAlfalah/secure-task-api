@@ -20,7 +20,6 @@ C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\Azure.Identity
 C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\BCrypt.Net-Next.dll
 C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\Humanizer.dll
 C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
-C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\Microsoft.AspNetCore.OpenApi.dll
 C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\Microsoft.Bcl.AsyncInterfaces.dll
 C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\Microsoft.Bcl.Cryptography.dll
 C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\Microsoft.Build.Framework.dll
@@ -172,3 +171,13 @@ C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.
 C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\obj\project.assets.json
 C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\obj\SecureTaskApi.Tests.csproj.nuget.dgspec.json
 C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\obj\Debug\net10.0\SecureTaskApi.Tests.sourcelink.json
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\appsettings.Development.json
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\appsettings.json
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\secure-task-api.deps.json
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\secure-task-api.runtimeconfig.json
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\secure-task-api.staticwebassets.endpoints.json
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests.deps.json
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests.runtimeconfig.json
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\obj\project.assets.json
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\obj\SecureTaskApi.Tests.csproj.nuget.dgspec.json
+C:\Users\mealf\Desktop\Projects\secure-task-api\bin\Debug\net10.0\SecureTaskApi.Tests\bin\Debug\net10.0\SecureTaskApi.Tests\obj\Debug\net10.0\SecureTaskApi.Tests.sourcelink.json

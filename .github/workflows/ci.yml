@@ -26,4 +26,7 @@ jobs:
         run: dotnet build secure-task-api.sln --no-restore --configuration Release
 
       - name: Run tests
-        run: dotnet test SecureTaskApi.Tests/SecureTaskApi.Tests.csproj --no-build --configuration Release --verbosity normal
+        run: dotnet test SecureTaskApi.Tests/SecureTaskApi.Tests.csproj --configuration Release --verbosity normal
+
+      - name: Build Docker image
+        run: docker build -t secure-task-api:latest .
