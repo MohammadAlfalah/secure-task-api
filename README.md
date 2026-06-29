@@ -1,146 +1,105 @@
 # Secure Task API
 
-A secure, multi-user task-management REST API built with **ASP.NET Core (.NET 10)**.
-Users register and log in, receive a **JWT**, and manage their own private to-do
-items. Every task is scoped to its owner, so one user can never see or modify
-another user's data.
+A multi-user to-do REST API in ASP.NET Core where every task is locked to the user who created it.
 
-This project demonstrates a production-style backend: token-based authentication,
-password hashing, a service layer, EF Core migrations, automated tests,
-Swagger documentation, and a one-command Docker setup.
+I built this to get comfortable with the security side of a .NET backend rather than just CRUD. The interesting constraint I set for myself: a logged-in user should never be able to see or touch another user's tasks, even if they guess the ID. That one rule ended up shaping most of the design — the owner is always taken from the JWT, never from the request body or the URL.
 
----
+## What it does
 
-## Features
+You register, you log in, you get a JWT. From then on every call to `/api/tasks` is filtered by the user ID baked into that token's `NameIdentifier` claim. The controller never trusts a user-supplied owner ID, so asking for `GET /api/tasks/5` only returns task 5 if it's actually yours — otherwise you get a 404, not someone else's data.
 
-- **JWT authentication** – stateless bearer-token auth via `Microsoft.AspNetCore.Authentication.JwtBearer`.
-- **Password security** – passwords are hashed with **BCrypt**; plain-text passwords are never stored.
-- **Per-user data isolation** – the user id is read from the JWT claim, so the API only ever returns the caller's own tasks.
-- **Full CRUD** for tasks (`GET` / `POST` / `PUT` / `DELETE`).
-- **EF Core + SQL Server** with automatic database migration on startup.
-- **Swagger / OpenAPI** UI with a built-in "Authorize" button for testing protected endpoints.
-- **Global exception handling** – unhandled errors return a clean JSON message instead of a stack trace.
-- **Unit tests** (xUnit + EF Core In-Memory) covering the task service, including the data-isolation rule.
-- **Dockerised** – `docker compose up` starts the API and a SQL Server instance together.
+A few specifics worth calling out:
 
-## Tech stack
+- **JWT bearer auth** via `Microsoft.AspNetCore.Authentication.JwtBearer`, with issuer, audience, lifetime and signing-key validation all switched on.
+- **Passwords hashed with BCrypt** (`BCrypt.Net-Next`) — nothing is ever stored in plain text.
+- **A service layer** (`ITaskService` / `TaskService`) sitting between the controllers and EF Core, so the per-user filtering logic is testable without a web server or a real database.
+- **EF Core 10 + SQL Server**, with `db.Database.Migrate()` running on startup and a demo user seeded the first time the DB is empty.
+- **Swagger UI** with the Authorize button wired up, so you can paste a token and hit the protected endpoints from the browser.
+- A small **global exception handler** that returns a plain JSON error instead of a stack trace.
 
-| Concern | Technology |
+## Stack
+
+| | |
 |---|---|
 | Framework | ASP.NET Core / .NET 10 |
-| Auth | JWT Bearer tokens |
-| Password hashing | BCrypt.Net-Next |
-| Data access | Entity Framework Core 10 (SQL Server) |
-| API docs | Swashbuckle (Swagger) |
+| Auth | JWT bearer tokens |
+| Hashing | BCrypt.Net-Next |
+| Data | EF Core 10 (SQL Server) |
+| Docs | Swashbuckle / Swagger |
 | Tests | xUnit + EF Core In-Memory |
-| Containerisation | Docker + Docker Compose |
+| Container | Docker + Docker Compose |
 
-## Architecture
+The flow is roughly: `Controllers -> ITaskService -> AppDbContext -> SQL Server`, with `JwtTokenService` handling token creation off to the side.
 
-```
-Controllers  ->  Services (ITaskService)  ->  EF Core DbContext  ->  SQL Server
-   Auth/JWT  ->  JwtTokenService
-```
+## Running it
 
-Controllers stay thin and delegate business logic to the service layer, which makes
-the logic easy to unit-test without spinning up a web server or a real database.
-
----
-
-## Getting started
-
-### Option A — Docker (recommended, no local SQL Server needed)
+The quickest path is Docker — it brings up the API and a SQL Server 2022 container together, so you don't need a local SQL install:
 
 ```bash
 docker compose up --build
 ```
 
-The API is then available at `http://localhost:8080` and Swagger at
-`http://localhost:8080/swagger`.
+API on `http://localhost:8080`, Swagger at `http://localhost:8080/swagger`.
 
-### Option B — Run locally with the .NET SDK
-
-Requires the .NET 10 SDK and a reachable SQL Server. Set the connection string and
-JWT settings in `appsettings.Development.json`, then:
+To run it directly with the SDK instead, you need the .NET 10 SDK and a reachable SQL Server. The default connection string in `appsettings.json` points at LocalDB. Then:
 
 ```bash
 dotnet restore
 dotnet run
 ```
 
-Swagger will be available at the URL printed in the console (e.g. `https://localhost:7xxx/swagger`).
+That serves on `http://localhost:5028` (and `https://localhost:7242`) per `launchSettings.json`.
 
-### Seeded test user
+On first run the DB is seeded with a demo account so you can log in straight away:
 
-On first run the database is seeded with a demo account so you can log in immediately:
+```
+username: testuser
+password: test123
+```
 
-| Username | Password |
-|---|---|
-| `testuser` | `test123` |
+## Endpoints
 
----
+Auth (`/api/auth`):
 
-## API reference
+- `POST /register` — `{ "userName", "password" }`, creates an account.
+- `POST /login` — same body, returns a JWT in the response.
 
-Base path: `/api`
+Tasks (`/api/tasks`, all require `Authorization: Bearer <token>`):
 
-### Auth — `/api/auth`
+- `GET /` — your tasks
+- `GET /{id}` — one task (404 if it isn't yours)
+- `POST /` — create
+- `PUT /{id}` — update
+- `DELETE /{id}` — delete
 
-| Method | Route | Body | Description |
-|---|---|---|---|
-| `POST` | `/register` | `{ "userName", "password" }` | Create a new account. |
-| `POST` | `/login` | `{ "userName", "password" }` | Returns a JWT string on success. |
-
-### Tasks — `/api/tasks` *(requires `Authorization: Bearer <token>`)*
-
-| Method | Route | Description |
-|---|---|---|
-| `GET` | `/` | List the current user's tasks. |
-| `GET` | `/{id}` | Get one task by id. |
-| `POST` | `/` | Create a task. |
-| `PUT` | `/{id}` | Update a task. |
-| `DELETE` | `/{id}` | Delete a task. |
-
-### Example flow
+Quick smoke test against the Docker setup:
 
 ```bash
-# 1. Log in and capture the token
-TOKEN=$(curl -s -X POST http://localhost:8080/api/auth/login \
+# Log in — the response body is the JWT (as a JSON string)
+curl -s -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"userName":"testuser","password":"test123"}')
+  -d '{"userName":"testuser","password":"test123"}'
 
-# 2. Create a task
+# Then use that token (strip the surrounding quotes) for task calls
 curl -X POST http://localhost:8080/api/tasks \
-  -H "Authorization: Bearer $TOKEN" \
+  -H "Authorization: Bearer <token>" \
   -H "Content-Type: application/json" \
-  -d '{"title":"Write README"}'
-
-# 3. List your tasks
-curl http://localhost:8080/api/tasks -H "Authorization: Bearer $TOKEN"
+  -d '{"title":"Write the README"}'
 ```
 
----
-
-## Running the tests
+## Tests
 
 ```bash
-dotnet test
+dotnet test SecureTaskApi.Tests/SecureTaskApi.Tests.csproj
 ```
 
-The suite verifies task creation, per-user filtering, owner-checked deletion, and
-updates using an in-memory database (no SQL Server required).
+The suite is small but it covers the parts I actually cared about: creating a task, the per-user filter (user 1 can't see user 2's task), an owner-checked delete that fails for the wrong user, and an update. It runs on EF Core's in-memory provider, so no SQL Server needed. There's also a GitHub Actions workflow (`.github/workflows/ci.yml`) that restores, builds, runs the tests and builds the Docker image on every push and PR to `main`.
 
----
+## A note on the committed secrets
 
-## Security notes
+The SQL SA password and `Jwt:Key` in `docker-compose.yml` and `appsettings.json` are local development throwaways, deliberately committed so the project runs out of the box. In anything real they'd come from environment variables or a secret store and would never be in the repo.
 
-- The credentials in `docker-compose.yml` and `appsettings.json` (SQL password,
-  `Jwt:Key`) are **local development values only**. In a real deployment they would
-  be supplied as environment variables / secrets and never committed.
-- HTTPS redirection, token-expiry validation, and issuer/audience validation are all enabled.
+## What I'd add next
 
-## Possible next steps
-
-- Refresh tokens and role-based authorization (an admin `Role` field already exists on the user model).
-- Pagination and filtering on the task list.
-- CI pipeline (build + test) via GitHub Actions.
+- Refresh tokens, and role-based authorization — there's already a `Role` field on the user model that nothing uses yet.
+- Pagination and filtering on the task list once it grows past a handful of rows.
